@@ -9,6 +9,7 @@ import Home from "@/pages/home";
 import Create from "@/pages/create";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
+import ProfileSettings from "@/pages/profile-settings";
 import NotFound from "@/pages/not-found";
 import { useState } from "react";
 
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/create" component={Create} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/profile/:username" component={Profile} />
+      <Route path="/profile/settings" component={ProfileSettings} />
       <Route component={NotFound} />
     </Switch>
   );

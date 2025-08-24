@@ -10,6 +10,7 @@ import VideoPlayer from "./video-player";
 import GiigPlayer from "./giig-player";
 import LiveStreamPlayer from "./live-stream-player";
 import CommentSection from "./comment-section";
+import UserAvatar from "./user-avatar";
 
 interface ContentCardProps {
   content: {
@@ -222,11 +223,14 @@ export default function ContentCard({ content }: ContentCardProps) {
         {/* Creator Info */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <img 
-              src={content.user?.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&w=40&h=40&fit=crop"} 
-              alt={content.user?.displayName}
-              className="w-10 h-10 rounded-full"
-              data-testid="img-creator-avatar"
+            <UserAvatar 
+              user={{
+                id: content.user?.id,
+                username: content.user?.username,
+                displayName: content.user?.displayName,
+                avatar: content.user?.avatar
+              }}
+              size="md"
             />
             <div>
               <p className="font-semibold" data-testid="text-creator-name">{content.user?.displayName || "Creator"}</p>

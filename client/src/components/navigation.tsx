@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Home, Plus, BarChart3, User, Users } from "lucide-react";
+import UserAvatar from "@/components/user-avatar";
 
 interface NavigationProps {
   onCollaborationToggle?: () => void;
@@ -81,11 +82,15 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
             </Button>
             
             <Link href="/profile/alexchen">
-              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-plasma-blue" data-testid="nav-profile">
-                <img 
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&w=150&h=150&fit=crop" 
-                  alt="Profile" 
-                  className="w-full h-full object-cover" 
+              <div className="border-2 border-plasma-blue rounded-full" data-testid="nav-profile">
+                <UserAvatar 
+                  user={{
+                    id: "user-1",
+                    username: "alexchen",
+                    displayName: "Alex Chen",
+                    avatar: null
+                  }}
+                  size="md"
                 />
               </div>
             </Link>

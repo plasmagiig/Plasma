@@ -3,19 +3,20 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, MapPin, Calendar, Link as LinkIcon, Users, Zap, TrendingUp } from "lucide-react";
+import { Loader2, MapPin, Calendar, Link as LinkIcon, Users, Zap, TrendingUp, Settings, Edit3 } from "lucide-react";
 import ContentCard from "@/components/content-card";
+import UserAvatar from "@/components/user-avatar";
 
 export default function Profile() {
   const { username } = useParams();
 
-  const { data: users, isLoading: usersLoading } = useQuery({
+  const { data: users, isLoading: usersLoading } = useQuery<any[]>({
     queryKey: ["/api/users"],
   });
 
   const user = users?.find((u: any) => u.username === username);
 
-  const { data: userContent, isLoading: contentLoading } = useQuery({
+  const { data: userContent, isLoading: contentLoading } = useQuery<any[]>({
     queryKey: ["/api/users", user?.id, "content"],
     enabled: !!user?.id,
   });
@@ -50,11 +51,11 @@ export default function Profile() {
               {/* Avatar and Basic Info */}
               <div className="flex items-center gap-6">
                 <div className="relative">
-                  <img 
-                    src={user.avatar || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&w=150&h=150&fit=crop`}
-                    alt={user.displayName}
-                    className="w-24 h-24 rounded-full border-4 border-plasma-blue/50"
-                    data-testid="img-profile-avatar"
+                  <UserAvatar 
+                    user={user}
+                    size="xl"
+                    className="border-4 border-plasma-blue/50"
+                    data-testid="profile-avatar"
                   />
                   <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-plasma-blue rounded-full flex items-center justify-center animate-plasma-pulse">
                     <Zap className="h-4 w-4 text-white" />
@@ -84,6 +85,16 @@ export default function Profile() {
                   data-testid="button-message"
                 >
                   Message
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="border-gray-600 text-gray-400 hover:bg-gray-600 hover:text-white"
+                  onClick={() => window.location.href = '/profile/settings'}
+                  data-testid="button-edit-profile"
+                >
+                  <Edit3 className="h-4 w-4 mr-2" />
+                  Edit Profile
                 </Button>
               </div>
             </div>
