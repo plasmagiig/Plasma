@@ -28,7 +28,15 @@ import {
   Trash2,
   LogOut,
   Save,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  DollarSign,
+  TrendingUp,
+  Zap,
+  Brain,
+  Target,
+  BarChart3,
+  Wand2,
+  Sparkles
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -76,6 +84,29 @@ interface UserSettings {
     soundEffects: boolean;
     notifications: boolean;
   };
+  monetization: {
+    earningGoals: {
+      daily: number;
+      monthly: number;
+    };
+    autoWithdraw: boolean;
+    withdrawThreshold: number;
+    payoutMethod: "paypal" | "bank" | "crypto";
+    showEarningsPublically: boolean;
+  };
+  ai: {
+    contentSuggestions: boolean;
+    smartNotifications: boolean;
+    autoTagging: boolean;
+    feedOptimization: boolean;
+    performanceInsights: boolean;
+  };
+  creator: {
+    defaultWatermark: boolean;
+    autoBackup: boolean;
+    qualityPreset: "fast" | "balanced" | "quality";
+    templateSaving: boolean;
+  };
 }
 
 const defaultSettings: UserSettings = {
@@ -119,6 +150,29 @@ const defaultSettings: UserSettings = {
     masterVolume: 75,
     soundEffects: true,
     notifications: true,
+  },
+  monetization: {
+    earningGoals: {
+      daily: 50,
+      monthly: 1000,
+    },
+    autoWithdraw: false,
+    withdrawThreshold: 100,
+    payoutMethod: "paypal",
+    showEarningsPublically: false,
+  },
+  ai: {
+    contentSuggestions: true,
+    smartNotifications: true,
+    autoTagging: true,
+    feedOptimization: true,
+    performanceInsights: true,
+  },
+  creator: {
+    defaultWatermark: true,
+    autoBackup: true,
+    qualityPreset: "balanced",
+    templateSaving: true,
   },
 };
 
@@ -464,6 +518,227 @@ export default function Settings() {
                   checked={settings.audio.notifications}
                   onCheckedChange={(checked) => updateSetting("audio", "notifications", checked)}
                   data-testid="switch-notification-sounds"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Creator Economy & Monetization */}
+        <Card className="glass-morphism mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5 text-green-400" />
+              Creator Economy
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="daily-goal">Daily Earning Goal ($)</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <input
+                    type="number"
+                    id="daily-goal"
+                    value={settings.monetization.earningGoals.daily}
+                    onChange={(e) => updateSetting("monetization", "earningGoals", {
+                      ...settings.monetization.earningGoals,
+                      daily: Number(e.target.value)
+                    })}
+                    className="w-full px-3 py-2 bg-plasma-surface/50 border border-plasma-blue/30 rounded-md text-white"
+                    min="0"
+                    data-testid="input-daily-goal"
+                  />
+                  <Target className="h-4 w-4 text-green-400" />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="monthly-goal">Monthly Earning Goal ($)</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <input
+                    type="number"
+                    id="monthly-goal"
+                    value={settings.monetization.earningGoals.monthly}
+                    onChange={(e) => updateSetting("monetization", "earningGoals", {
+                      ...settings.monetization.earningGoals,
+                      monthly: Number(e.target.value)
+                    })}
+                    className="w-full px-3 py-2 bg-plasma-surface/50 border border-plasma-blue/30 rounded-md text-white"
+                    min="0"
+                    data-testid="input-monthly-goal"
+                  />
+                  <TrendingUp className="h-4 w-4 text-green-400" />
+                </div>
+              </div>
+            </div>
+
+            <Separator className="bg-gray-700/50" />
+
+            <div>
+              <Label htmlFor="payout-method">Payout Method</Label>
+              <Select 
+                value={settings.monetization.payoutMethod} 
+                onValueChange={(value) => updateSetting("monetization", "payoutMethod", value)}
+              >
+                <SelectTrigger data-testid="select-payout-method">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="paypal">PayPal</SelectItem>
+                  <SelectItem value="bank">Bank Transfer</SelectItem>
+                  <SelectItem value="crypto">Cryptocurrency</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="withdraw-threshold">Auto-Withdraw Threshold ($)</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <input
+                  type="number"
+                  id="withdraw-threshold"
+                  value={settings.monetization.withdrawThreshold}
+                  onChange={(e) => updateSetting("monetization", "withdrawThreshold", Number(e.target.value))}
+                  className="w-full px-3 py-2 bg-plasma-surface/50 border border-plasma-blue/30 rounded-md text-white"
+                  min="10"
+                  step="10"
+                  data-testid="input-withdraw-threshold"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="auto-withdraw">Auto-Withdraw Earnings</Label>
+                  <p className="text-sm text-gray-400">Automatically withdraw when threshold is reached</p>
+                </div>
+                <Switch
+                  id="auto-withdraw"
+                  checked={settings.monetization.autoWithdraw}
+                  onCheckedChange={(checked) => updateSetting("monetization", "autoWithdraw", checked)}
+                  data-testid="switch-auto-withdraw"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="show-earnings">Show Earnings Publicly</Label>
+                  <p className="text-sm text-gray-400">Display your earnings on your profile</p>
+                </div>
+                <Switch
+                  id="show-earnings"
+                  checked={settings.monetization.showEarningsPublically}
+                  onCheckedChange={(checked) => updateSetting("monetization", "showEarningsPublically", checked)}
+                  data-testid="switch-show-earnings"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* AI & Smart Features */}
+        <Card className="glass-morphism mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="h-5 w-5 text-purple-400" />
+              AI & Smart Features
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(settings.ai).map(([key, value]) => (
+                <div key={key} className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor={`ai-${key}`} className="capitalize">
+                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                    </Label>
+                    <p className="text-sm text-gray-400">
+                      {key === 'contentSuggestions' && 'AI suggests content ideas'}
+                      {key === 'smartNotifications' && 'Prioritize important notifications'}
+                      {key === 'autoTagging' && 'Automatically tag your content'}
+                      {key === 'feedOptimization' && 'Optimize your home feed'}
+                      {key === 'performanceInsights' && 'Get AI-powered analytics'}
+                    </p>
+                  </div>
+                  <Switch
+                    id={`ai-${key}`}
+                    checked={value}
+                    onCheckedChange={(checked) => updateSetting("ai", key, checked)}
+                    data-testid={`switch-ai-${key}`}
+                  />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Creator Tools */}
+        <Card className="glass-morphism mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wand2 className="h-5 w-5 text-blue-400" />
+              Creator Tools
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <Label htmlFor="quality-preset">Content Quality Preset</Label>
+              <Select 
+                value={settings.creator.qualityPreset} 
+                onValueChange={(value) => updateSetting("creator", "qualityPreset", value)}
+              >
+                <SelectTrigger data-testid="select-quality-preset">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fast">Fast Upload - Lower quality, faster processing</SelectItem>
+                  <SelectItem value="balanced">Balanced - Good quality, moderate processing</SelectItem>
+                  <SelectItem value="quality">High Quality - Best quality, slower processing</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Separator className="bg-gray-700/50" />
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="default-watermark">Default Watermark</Label>
+                  <p className="text-sm text-gray-400">Automatically add your watermark to content</p>
+                </div>
+                <Switch
+                  id="default-watermark"
+                  checked={settings.creator.defaultWatermark}
+                  onCheckedChange={(checked) => updateSetting("creator", "defaultWatermark", checked)}
+                  data-testid="switch-default-watermark"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="auto-backup">Auto-Backup Content</Label>
+                  <p className="text-sm text-gray-400">Automatically backup your content to cloud</p>
+                </div>
+                <Switch
+                  id="auto-backup"
+                  checked={settings.creator.autoBackup}
+                  onCheckedChange={(checked) => updateSetting("creator", "autoBackup", checked)}
+                  data-testid="switch-auto-backup"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="template-saving">Save Content Templates</Label>
+                  <p className="text-sm text-gray-400">Save your content settings as reusable templates</p>
+                </div>
+                <Switch
+                  id="template-saving"
+                  checked={settings.creator.templateSaving}
+                  onCheckedChange={(checked) => updateSetting("creator", "templateSaving", checked)}
+                  data-testid="switch-template-saving"
                 />
               </div>
             </div>
