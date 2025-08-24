@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import ContentCard from "@/components/content-card";
 import EnergyBar from "@/components/energy-bar";
+import DailyChallengeBanner from "@/components/daily-challenge-banner";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
@@ -73,6 +74,9 @@ export default function Home() {
             <p className="text-xl text-gray-400">Content discovery reimagined with energy-based algorithms</p>
           </div>
           
+          {/* Daily Challenge Banner */}
+          <DailyChallengeBanner />
+
           {/* Energy Flow Indicator */}
           <EnergyBar />
           

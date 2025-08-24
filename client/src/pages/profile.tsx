@@ -3,9 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, MapPin, Calendar, Link as LinkIcon, Users, Zap, TrendingUp, Settings, Edit3 } from "lucide-react";
+import { Loader2, MapPin, Calendar, Link as LinkIcon, Users, Zap, TrendingUp, Settings, Edit3, Award } from "lucide-react";
 import ContentCard from "@/components/content-card";
 import UserAvatar from "@/components/user-avatar";
+import CreatorLevelBadge from "@/components/creator-level-badge";
+import AchievementBadge from "@/components/achievement-badge";
 
 export default function Profile() {
   const { username } = useParams();
@@ -63,7 +65,15 @@ export default function Profile() {
                 </div>
                 
                 <div>
-                  <h1 className="text-3xl font-bold mb-2" data-testid="text-display-name">{user.displayName}</h1>
+                  <div className="flex items-center space-x-3 mb-2">
+                    <h1 className="text-3xl font-bold" data-testid="text-display-name">{user.displayName}</h1>
+                    {user.isVerified && (
+                      <Badge className="bg-blue-500/20 text-blue-400">
+                        ✓ Verified
+                      </Badge>
+                    )}
+                    <CreatorLevelBadge level={user.creatorLevel || "bronze"} />
+                  </div>
                   <p className="text-plasma-blue text-lg mb-2" data-testid="text-username">@{user.username}</p>
                   {user.bio && (
                     <p className="text-gray-400 max-w-md" data-testid="text-bio">{user.bio}</p>
@@ -127,17 +137,48 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Creator Achievements */}
-            <div className="flex flex-wrap gap-2 mt-6">
-              <Badge variant="secondary" className="bg-plasma-blue/20 text-plasma-blue">
-                🏆 Top Creator
-              </Badge>
-              <Badge variant="secondary" className="bg-plasma-purple/20 text-plasma-purple">
-                ⚡ Energy Master
-              </Badge>
-              <Badge variant="secondary" className="bg-plasma-pink/20 text-plasma-pink">
-                🚀 Viral Content
-              </Badge>
+            {/* Achievement Showcase */}
+            <div className="mt-6">
+              <h3 className="text-sm font-medium text-gray-400 mb-3">Recent Achievements</h3>
+              <div className="flex flex-wrap gap-3">
+                <AchievementBadge 
+                  achievement={{
+                    name: "Top Creator",
+                    description: "Reached top 1% of creators this month",
+                    icon: "crown",
+                    points: 1000,
+                    category: "milestone"
+                  }}
+                  isNew={true}
+                />
+                <AchievementBadge 
+                  achievement={{
+                    name: "Energy Master",
+                    description: "Collected 10,000 energy points",
+                    icon: "zap",
+                    points: 750,
+                    category: "engagement"
+                  }}
+                />
+                <AchievementBadge 
+                  achievement={{
+                    name: "Viral Creator",
+                    description: "Posted content with 100K+ views",
+                    icon: "star",
+                    points: 500,
+                    category: "content"
+                  }}
+                />
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="w-16 h-16 rounded-full border-2 border-dashed border-gray-600 hover:border-plasma-blue transition-colors"
+                  data-testid="button-view-all-achievements"
+                >
+                  <Award className="h-6 w-6 text-gray-400" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

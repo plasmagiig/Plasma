@@ -14,6 +14,11 @@ export const users = pgTable("users", {
   totalEarnings: decimal("total_earnings", { precision: 10, scale: 2 }).default("0.00"),
   followersCount: integer("followers_count").default(0),
   followingCount: integer("following_count").default(0),
+  creatorLevel: text("creator_level").default("bronze"), // bronze, silver, gold, platinum
+  achievementPoints: integer("achievement_points").default(0),
+  theme: text("theme").default("dark"), // dark, light
+  notificationSettings: text("notification_settings").default("{}"), // JSON string
+  isVerified: boolean("is_verified").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -74,6 +79,74 @@ export const comments = pgTable("comments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const achievements = pgTable("achievements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  icon: text("icon").notNull(),
+  points: integer("points").notNull(),
+  category: text("category").notNull(), // content, engagement, milestone
+  requirement: text("requirement").notNull(), // JSON string with conditions
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userAchievements = pgTable("user_achievements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  achievementId: varchar("achievement_id").references(() => achievements.id).notNull(),
+  unlockedAt: timestamp("unlocked_at").defaultNow(),
+  isNew: boolean("is_new").default(true),
+});
+
+export const reactions = pgTable("reactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  contentId: varchar("content_id").references(() => content.id).notNull(),
+  emoji: text("emoji").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const virtualGifts = pgTable("virtual_gifts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  senderId: varchar("sender_id").references(() => users.id).notNull(),
+  receiverId: varchar("receiver_id").references(() => users.id).notNull(),
+  contentId: varchar("content_id").references(() => content.id),
+  giftType: text("gift_type").notNull(), // heart, star, fire, etc.
+  value: decimal("value", { precision: 10, scale: 2 }).notNull(),
+  message: text("message"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const stories = pgTable("stories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  fileUrl: text("file_url").notNull(),
+  caption: text("caption"),
+  viewsCount: integer("views_count").default(0),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const storyViews = pgTable("story_views", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  storyId: varchar("story_id").references(() => stories.id).notNull(),
+  viewerId: varchar("viewer_id").references(() => users.id).notNull(),
+  viewedAt: timestamp("viewed_at").defaultNow(),
+});
+
+export const challenges = pgTable("challenges", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  hashtag: text("hashtag").notNull(),
+  reward: integer("reward").default(0),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -109,6 +182,42 @@ export const insertCommentSchema = createInsertSchema(comments).omit({
   createdAt: true,
 });
 
+export const insertAchievementSchema = createInsertSchema(achievements).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertUserAchievementSchema = createInsertSchema(userAchievements).omit({
+  id: true,
+  unlockedAt: true,
+});
+
+export const insertReactionSchema = createInsertSchema(reactions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertVirtualGiftSchema = createInsertSchema(virtualGifts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertStorySchema = createInsertSchema(stories).omit({
+  id: true,
+  createdAt: true,
+  viewsCount: true,
+});
+
+export const insertStoryViewSchema = createInsertSchema(storyViews).omit({
+  id: true,
+  viewedAt: true,
+});
+
+export const insertChallengeSchema = createInsertSchema(challenges).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -122,3 +231,17 @@ export type Earning = typeof earnings.$inferSelect;
 export type InsertEarning = z.infer<typeof insertEarningSchema>;
 export type Comment = typeof comments.$inferSelect;
 export type InsertComment = z.infer<typeof insertCommentSchema>;
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+export type UserAchievement = typeof userAchievements.$inferSelect;
+export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
+export type Reaction = typeof reactions.$inferSelect;
+export type InsertReaction = z.infer<typeof insertReactionSchema>;
+export type VirtualGift = typeof virtualGifts.$inferSelect;
+export type InsertVirtualGift = z.infer<typeof insertVirtualGiftSchema>;
+export type Story = typeof stories.$inferSelect;
+export type InsertStory = z.infer<typeof insertStorySchema>;
+export type StoryView = typeof storyViews.$inferSelect;
+export type InsertStoryView = z.infer<typeof insertStoryViewSchema>;
+export type Challenge = typeof challenges.$inferSelect;
+export type InsertChallenge = z.infer<typeof insertChallengeSchema>;

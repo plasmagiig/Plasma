@@ -2,8 +2,11 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Home, Plus, BarChart3, User, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Menu, Home, Plus, BarChart3, User, Users, TrendingUp, Bell } from "lucide-react";
 import UserAvatar from "@/components/user-avatar";
+import { ThemeToggle } from "@/components/theme-toggle";
+import SmartNotifications from "@/components/smart-notifications";
 
 interface NavigationProps {
   onCollaborationToggle?: () => void;
@@ -12,11 +15,13 @@ interface NavigationProps {
 export default function Navigation({ onCollaborationToggle }: NavigationProps) {
   const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const navItems = [
     { path: "/", label: "Stream", icon: Home, color: "plasma-blue" },
+    { path: "/trending", label: "Trending", icon: TrendingUp, color: "plasma-pink" },
     { path: "/create", label: "Create", icon: Plus, color: "plasma-purple" },
-    { path: "/dashboard", label: "Earn", icon: BarChart3, color: "plasma-pink" },
+    { path: "/dashboard", label: "Earn", icon: BarChart3, color: "plasma-blue" },
   ];
 
   const NavContent = () => (
@@ -67,8 +72,27 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
           
           <NavContent />
           
-          {/* Profile, Collaboration and Mobile Menu */}
+          {/* Profile, Theme, Collaboration and Mobile Menu */}
           <div className="flex items-center space-x-4">
+            {/* Notifications */}
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setNotificationsOpen(!notificationsOpen)}
+                className="relative p-2"
+                data-testid="button-notifications"
+              >
+                <Bell className="h-5 w-5 text-gray-300 hover:text-white transition-colors" />
+                <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full p-0 flex items-center justify-center">
+                  2
+                </Badge>
+              </Button>
+            </div>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
+            
             {/* Collaboration Button */}
             <Button
               variant="ghost" 
@@ -128,6 +152,12 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
           </div>
         </div>
       </div>
+      
+      {/* Smart Notifications Modal */}
+      <SmartNotifications 
+        isOpen={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+      />
     </nav>
   );
 }

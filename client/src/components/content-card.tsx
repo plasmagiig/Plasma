@@ -11,6 +11,9 @@ import GiigPlayer from "./giig-player";
 import LiveStreamPlayer from "./live-stream-player";
 import CommentSection from "./comment-section";
 import UserAvatar from "./user-avatar";
+import LiveReactions from "./live-reactions";
+import VirtualGiftSender from "./virtual-gift-sender";
+import CreatorLevelBadge from "./creator-level-badge";
 
 interface ContentCardProps {
   content: {
@@ -33,6 +36,8 @@ interface ContentCardProps {
       username: string;
       displayName: string;
       avatar?: string;
+      creatorLevel?: string;
+      isVerified?: boolean;
     };
   };
 }
@@ -233,7 +238,17 @@ export default function ContentCard({ content }: ContentCardProps) {
               size="md"
             />
             <div>
-              <p className="font-semibold" data-testid="text-creator-name">{content.user?.displayName || "Creator"}</p>
+              <div className="flex items-center space-x-2 mb-1">
+                <p className="font-semibold" data-testid="text-creator-name">{content.user?.displayName || "Creator"}</p>
+                {content.user?.isVerified && (
+                  <Badge className="bg-blue-500/20 text-blue-400 text-xs px-1.5 py-0.5">
+                    ✓
+                  </Badge>
+                )}
+                {content.user?.creatorLevel && (
+                  <CreatorLevelBadge level={content.user.creatorLevel} size="sm" />
+                )}
+              </div>
               <p className="text-sm text-gray-400" data-testid="text-creator-category">Creator</p>
             </div>
           </div>
@@ -312,6 +327,19 @@ export default function ContentCard({ content }: ContentCardProps) {
                 <Share2 className="h-4 w-4" />
                 <span className="text-sm" data-testid="text-amplify-count">{content.amplify}</span>
               </Button>
+
+              {/* Live Reactions */}
+              <LiveReactions 
+                contentId={content.id} 
+                isLive={content.isLive}
+              />
+
+              {/* Virtual Gifts */}
+              <VirtualGiftSender 
+                receiverId={content.user?.id || ""}
+                contentId={content.id}
+                receiverName={content.user?.displayName || "Creator"}
+              />
 
               {/* Comments Button */}
               <CommentSection 
