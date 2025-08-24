@@ -17,7 +17,12 @@ export default function Profile() {
     queryKey: ["/api/users"],
   });
 
-  const user = users?.find((u: any) => u.username === username);
+  // Find user by username or channelUrl
+  const user = users?.find((u: any) => 
+    u.username === username || 
+    u.channelUrl === username ||
+    (username === 'plasma' && u.id === 'user-1') // Special case for plasma -> alexchen
+  );
 
   const { data: userContent, isLoading: contentLoading } = useQuery<any[]>({
     queryKey: ["/api/users", user?.id, "content"],

@@ -78,9 +78,15 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
+                  <Link href="/alexchen">
+                    <DropdownMenuItem data-testid="menu-my-profile">
+                      <User className="mr-2 h-4 w-4" />
+                      My Profile
+                    </DropdownMenuItem>
+                  </Link>
                   <Link href="/profile/settings">
                     <DropdownMenuItem data-testid="menu-profile-settings">
-                      <User className="mr-2 h-4 w-4" />
+                      <Settings className="mr-2 h-4 w-4" />
                       Profile Settings
                     </DropdownMenuItem>
                   </Link>
