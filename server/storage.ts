@@ -110,6 +110,9 @@ export class MemStorage implements IStorage {
         amplify: 89,
         earnings: "43.20",
         isPublished: true,
+        isLive: false,
+        viewersCount: 0,
+        streamKey: null,
         createdAt: new Date(),
       },
       {
@@ -126,6 +129,9 @@ export class MemStorage implements IStorage {
         amplify: 178,
         earnings: "67.80",
         isPublished: true,
+        isLive: false,
+        viewersCount: 0,
+        streamKey: null,
         createdAt: new Date(),
       },
       {
@@ -139,6 +145,28 @@ export class MemStorage implements IStorage {
         amplify: 45,
         earnings: "23.45",
         isPublished: true,
+        isLive: false,
+        viewersCount: 0,
+        streamKey: null,
+        createdAt: new Date(),
+      },
+      {
+        id: "content-4",
+        userId: "user-2",
+        type: "livestream",
+        title: "Live: Creating 3D Art in Real-Time",
+        description: "Join me as I create stunning 3D artwork live! Ask questions, give feedback, and watch the creative process unfold in real-time.",
+        fileUrl: "wss://stream.plasma.com/live/user-2-stream",
+        thumbnailUrl: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?ixlib=rb-4.0.3&w=400&h=225&fit=crop",
+        duration: null,
+        energyBoosts: 1456,
+        resonance: 678,
+        amplify: 234,
+        earnings: "89.70",
+        isPublished: true,
+        isLive: true,
+        viewersCount: 1247,
+        streamKey: "plasma-live-maya-3d-art",
         createdAt: new Date(),
       },
     ];
@@ -164,6 +192,8 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      bio: insertUser.bio || null,
+      avatar: insertUser.avatar || null,
       energyLevel: 0,
       totalEarnings: "0.00",
       followersCount: 0,
@@ -197,7 +227,9 @@ export class MemStorage implements IStorage {
   }
 
   async getAllContent(): Promise<Content[]> {
-    return Array.from(this.content.values()).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return Array.from(this.content.values()).sort((a, b) => 
+      (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0)
+    );
   }
 
   async createContent(insertContent: InsertContent): Promise<Content> {
@@ -205,10 +237,17 @@ export class MemStorage implements IStorage {
     const content: Content = {
       ...insertContent,
       id,
+      description: insertContent.description || null,
+      fileUrl: insertContent.fileUrl || null,
+      thumbnailUrl: insertContent.thumbnailUrl || null,
+      duration: insertContent.duration || null,
       energyBoosts: 0,
       resonance: 0,
       amplify: 0,
       earnings: "0.00",
+      isLive: insertContent.type === "livestream",
+      viewersCount: insertContent.type === "livestream" ? 1 : 0,
+      streamKey: insertContent.type === "livestream" ? `plasma-live-${Math.random().toString(36).substr(2, 9)}` : null,
       createdAt: new Date(),
     };
     this.content.set(id, content);
@@ -242,6 +281,7 @@ export class MemStorage implements IStorage {
     const interaction: Interaction = {
       ...insertInteraction,
       id,
+      energyValue: insertInteraction.energyValue || 1,
       createdAt: new Date(),
     };
     this.interactions.set(id, interaction);
@@ -283,6 +323,7 @@ export class MemStorage implements IStorage {
     const subscription: Subscription = {
       ...insertSubscription,
       id,
+      isActive: insertSubscription.isActive !== false,
       createdAt: new Date(),
     };
     this.subscriptions.set(id, subscription);
@@ -308,6 +349,7 @@ export class MemStorage implements IStorage {
     const earning: Earning = {
       ...insertEarning,
       id,
+      description: insertEarning.description || null,
       createdAt: new Date(),
     };
     this.earnings.set(id, earning);
@@ -322,9 +364,9 @@ export class MemStorage implements IStorage {
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     const total = userEarnings.reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
-    const todayEarnings = userEarnings.filter(e => e.createdAt >= today).reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
-    const weekEarnings = userEarnings.filter(e => e.createdAt >= thisWeek).reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
-    const monthEarnings = userEarnings.filter(e => e.createdAt >= thisMonth).reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
+    const todayEarnings = userEarnings.filter(e => e.createdAt && e.createdAt >= today).reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
+    const weekEarnings = userEarnings.filter(e => e.createdAt && e.createdAt >= thisWeek).reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
+    const monthEarnings = userEarnings.filter(e => e.createdAt && e.createdAt >= thisMonth).reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
 
     return {
       total,

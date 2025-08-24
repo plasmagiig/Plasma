@@ -4,11 +4,13 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Navigation from "@/components/navigation";
+import CollaborationPanel from "@/components/collaboration-panel";
 import Home from "@/pages/home";
 import Create from "@/pages/create";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
+import { useState } from "react";
 
 function Router() {
   return (
@@ -23,12 +25,18 @@ function Router() {
 }
 
 function App() {
+  const [isCollaborationOpen, setIsCollaborationOpen] = useState(false);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <div className="min-h-screen bg-plasma-dark text-white">
-          <Navigation />
+          <Navigation onCollaborationToggle={() => setIsCollaborationOpen(!isCollaborationOpen)} />
           <Router />
+          <CollaborationPanel 
+            isOpen={isCollaborationOpen} 
+            onToggle={() => setIsCollaborationOpen(!isCollaborationOpen)} 
+          />
           <Toaster />
         </div>
       </TooltipProvider>

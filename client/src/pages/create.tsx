@@ -99,6 +99,16 @@ export default function Create() {
       icon: FileText,
       color: "plasma-pink",
     },
+    {
+      id: "livestream",
+      title: "Live Stream",
+      description: "Go live with your audience",
+      icon: () => <div className="relative">
+        <Video className="h-8 w-8" />
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+      </div>,
+      color: "red-500",
+    },
   ];
 
   const onSubmit = (data: CreateContentForm) => {
@@ -160,7 +170,7 @@ export default function Create() {
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   {/* File Upload for Video/Giig */}
-                  {selectedType !== "post" && (
+                  {selectedType !== "post" && selectedType !== "livestream" && (
                     <FormField
                       control={form.control}
                       name="file"
@@ -188,6 +198,36 @@ export default function Create() {
                         </FormItem>
                       )}
                     />
+                  )}
+
+                  {/* Live Stream Setup */}
+                  {selectedType === "livestream" && (
+                    <div className="space-y-4">
+                      <div className="border-2 border-dashed border-red-500/30 rounded-lg p-8 text-center bg-red-500/5">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-red-500/20 rounded-full flex items-center justify-center">
+                          <div className="relative">
+                            <Video className="h-8 w-8 text-red-500" />
+                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                          </div>
+                        </div>
+                        <h3 className="text-lg font-semibold mb-2">Go Live on PLASMA</h3>
+                        <p className="text-gray-400 mb-4">Share your energy with the world in real-time</p>
+                        
+                        <div className="bg-plasma-surface/50 rounded-lg p-4 mb-4">
+                          <div className="text-sm text-gray-400 mb-2">Stream Key (Keep Private)</div>
+                          <div className="font-mono text-xs bg-plasma-dark p-2 rounded border flex items-center justify-between">
+                            <span>plasma-live-{Math.random().toString(36).substr(2, 9)}</span>
+                            <Button size="sm" variant="ghost" className="text-plasma-blue" data-testid="button-copy-stream-key">Copy</Button>
+                          </div>
+                        </div>
+                        
+                        <div className="text-sm text-gray-400 space-y-1">
+                          <p>• Use OBS Studio or similar streaming software</p>
+                          <p>• Server: rtmp://stream.plasma.com/live</p>
+                          <p>• Max quality: 1080p @ 30fps</p>
+                        </div>
+                      </div>
+                    </div>
                   )}
 
                   {/* Title */}
@@ -221,6 +261,7 @@ export default function Create() {
                             placeholder="Describe your content..."
                             className="min-h-[120px]"
                             {...field}
+                            value={field.value || ""}
                             data-testid="textarea-description"
                           />
                         </FormControl>

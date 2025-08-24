@@ -2,9 +2,13 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Home, Plus, BarChart3, User } from "lucide-react";
+import { Menu, Home, Plus, BarChart3, User, Users } from "lucide-react";
 
-export default function Navigation() {
+interface NavigationProps {
+  onCollaborationToggle?: () => void;
+}
+
+export default function Navigation({ onCollaborationToggle }: NavigationProps) {
   const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -62,8 +66,20 @@ export default function Navigation() {
           
           <NavContent />
           
-          {/* Profile and Mobile Menu */}
+          {/* Profile, Collaboration and Mobile Menu */}
           <div className="flex items-center space-x-4">
+            {/* Collaboration Button */}
+            <Button
+              variant="ghost" 
+              size="sm"
+              onClick={onCollaborationToggle}
+              className="hidden md:flex items-center space-x-2 bg-plasma-purple/10 hover:bg-plasma-purple/20 border border-plasma-purple/30"
+              data-testid="button-collaboration"
+            >
+              <Users className="h-4 w-4 text-plasma-purple" />
+              <span className="text-plasma-purple">Collaborate</span>
+            </Button>
+            
             <Link href="/profile/alexchen">
               <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-plasma-blue" data-testid="nav-profile">
                 <img 

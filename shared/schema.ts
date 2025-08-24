@@ -20,7 +20,7 @@ export const users = pgTable("users", {
 export const content = pgTable("content", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id).notNull(),
-  type: text("type").notNull(), // "post", "video", "giig"
+  type: text("type").notNull(), // "post", "video", "giig", "livestream"
   title: text("title").notNull(),
   description: text("description"),
   fileUrl: text("file_url"),
@@ -31,6 +31,9 @@ export const content = pgTable("content", {
   amplify: integer("amplify").default(0),
   earnings: decimal("earnings", { precision: 10, scale: 2 }).default("0.00"),
   isPublished: boolean("is_published").default(true),
+  isLive: boolean("is_live").default(false),
+  viewersCount: integer("viewers_count").default(0),
+  streamKey: text("stream_key"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

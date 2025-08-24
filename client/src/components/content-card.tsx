@@ -8,6 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import VideoPlayer from "./video-player";
 import GiigPlayer from "./giig-player";
+import LiveStreamPlayer from "./live-stream-player";
 
 interface ContentCardProps {
   content: {
@@ -23,6 +24,8 @@ interface ContentCardProps {
     amplify: number;
     earnings: string;
     createdAt: string;
+    isLive?: boolean;
+    viewersCount?: number;
     user?: {
       id: string;
       username: string;
@@ -158,6 +161,50 @@ export default function ContentCard({ content }: ContentCardProps) {
               <Badge className="absolute bottom-3 left-3 bg-plasma-pink/80 backdrop-blur-sm">
                 GIIG
               </Badge>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    if (content.type === "livestream") {
+      return (
+        <div className="relative mb-4 rounded-xl overflow-hidden group aspect-video">
+          {isPlaying ? (
+            <LiveStreamPlayer
+              src={content.fileUrl || ""}
+              onClose={() => setIsPlaying(false)}
+              streamTitle={content.title}
+              streamerName={content.user?.displayName || "Creator"}
+              viewersCount={content.viewersCount || 0}
+            />
+          ) : (
+            <>
+              <img 
+                src={content.thumbnailUrl || "https://images.unsplash.com/photo-1547082299-de196ea013d6?ixlib=rb-4.0.3&w=400&h=225&fit=crop"} 
+                alt={content.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                <Button
+                  size="lg"
+                  className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full hover:scale-110 transition-transform p-0"
+                  onClick={() => setIsPlaying(true)}
+                  data-testid="button-watch-live-stream"
+                >
+                  <Play className="h-6 w-6 text-white ml-1" />
+                </Button>
+              </div>
+              {content.isLive && (
+                <div className="absolute top-3 left-3 flex items-center space-x-2">
+                  <Badge className="bg-red-500 hover:bg-red-500 animate-pulse">
+                    🔴 LIVE
+                  </Badge>
+                  <Badge className="bg-black/50 backdrop-blur-sm">
+                    {content.viewersCount?.toLocaleString() || 0} viewers
+                  </Badge>
+                </div>
+              )}
             </>
           )}
         </div>
