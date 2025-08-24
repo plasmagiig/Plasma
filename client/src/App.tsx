@@ -17,6 +17,7 @@ import Discover from "@/pages/discover";
 import Tools from "@/pages/tools";
 import Trending from "@/pages/trending";
 import MonetizationHub from "@/pages/monetization-hub";
+import PlasmaRedirect from "@/pages/plasma";
 import NotFound from "@/pages/not-found";
 import { useState } from "react";
 
@@ -33,6 +34,8 @@ function Router() {
       <Route path="/monetization" component={MonetizationHub} />
       <Route path="/profile/:username" component={Profile} />
       <Route path="/profile/settings" component={ProfileSettings} />
+      <Route path="/plasma" component={PlasmaRedirect} />
+      <Route path="/:username" component={Profile} />
       <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>

@@ -133,29 +133,45 @@ export default function Profile() {
 
               {/* Action Buttons */}
               <div className="md:ml-auto flex gap-3">
-                <Button 
-                  className="bg-gradient-to-r from-plasma-blue to-plasma-purple hover:scale-105 transition-transform"
-                  data-testid="button-follow"
-                >
-                  Follow
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="border-plasma-pink text-plasma-pink hover:bg-plasma-pink hover:text-white"
-                  data-testid="button-message"
-                >
-                  Message
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="border-gray-600 text-gray-400 hover:bg-gray-600 hover:text-white"
-                  onClick={() => window.location.href = '/profile/settings'}
-                  data-testid="button-edit-profile"
-                >
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
+                {/* Show Edit Profile for current user (user-1 = alexchen) */}
+                {user.id === 'user-1' ? (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      className="border-plasma-blue text-plasma-blue hover:bg-plasma-blue hover:text-white"
+                      onClick={() => window.location.href = '/profile/settings'}
+                      data-testid="button-edit-profile"
+                    >
+                      <Edit3 className="h-4 w-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="border-plasma-purple text-plasma-purple hover:bg-plasma-purple hover:text-white"
+                      onClick={() => window.location.href = '/profile/settings'}
+                      data-testid="button-manage-channel"
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      Manage Channel
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      className="bg-gradient-to-r from-plasma-blue to-plasma-purple hover:scale-105 transition-transform"
+                      data-testid="button-follow"
+                    >
+                      Follow
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="border-plasma-pink text-plasma-pink hover:bg-plasma-pink hover:text-white"
+                      data-testid="button-message"
+                    >
+                      Message
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
 
