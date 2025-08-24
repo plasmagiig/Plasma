@@ -57,7 +57,7 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
                 className="relative"
                 data-testid="button-notifications"
               >
-                <Bell className="h-5 w-5" />
+                <Bell className="h-5 w-5 text-yellow-500" />
                 <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 bg-plasma-pink text-white text-xs">
                   3
                 </Badge>
@@ -70,7 +70,7 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
                 className="relative"
                 data-testid="button-search"
               >
-                <Search className="h-5 w-5" />
+                <span className="text-lg">🔍</span>
               </Button>
 
               {/* Profile Menu */}
