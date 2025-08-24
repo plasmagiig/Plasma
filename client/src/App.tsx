@@ -12,6 +12,8 @@ import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import ProfileSettings from "@/pages/profile-settings";
 import Settings from "@/pages/settings";
+import Giig from "@/pages/giig";
+import Tools from "@/pages/tools";
 import Trending from "@/pages/trending";
 import MonetizationHub from "@/pages/monetization-hub";
 import NotFound from "@/pages/not-found";
@@ -22,6 +24,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/create" component={Create} />
+      <Route path="/giig" component={Giig} />
+      <Route path="/tools" component={Tools} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/trending" component={Trending} />
       <Route path="/monetization" component={MonetizationHub} />
