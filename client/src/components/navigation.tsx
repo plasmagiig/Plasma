@@ -3,7 +3,9 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { Menu, Home, Plus, BarChart3, User, Users, TrendingUp, Bell, DollarSign } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Menu, Home, Plus, BarChart3, User, Users, TrendingUp, Bell, DollarSign, Settings, LogOut } from "lucide-react";
 import UserAvatar from "@/components/user-avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import SmartNotifications from "@/components/smart-notifications";
@@ -106,19 +108,40 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
               <span className="text-plasma-purple">Collaborate</span>
             </Button>
             
-            <Link href="/profile/alexchen">
-              <div className="border-2 border-plasma-blue rounded-full" data-testid="nav-profile">
-                <UserAvatar 
-                  user={{
-                    id: "user-1",
-                    username: "alexchen",
-                    displayName: "Alex Chen",
-                    avatar: null
-                  }}
-                  size="md"
-                />
-              </div>
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="border-2 border-plasma-blue rounded-full cursor-pointer hover:border-plasma-purple transition-colors" data-testid="nav-profile">
+                  <UserAvatar 
+                    user={{
+                      id: "user-1",
+                      username: "alexchen",
+                      displayName: "Alex Chen",
+                      avatar: null
+                    }}
+                    size="md"
+                  />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="glass-morphism border border-plasma-blue/20">
+                <DropdownMenuItem asChild>
+                  <Link href="/profile/alexchen" className="flex items-center gap-2 cursor-pointer" data-testid="menu-profile">
+                    <User className="h-4 w-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings" className="flex items-center gap-2 cursor-pointer" data-testid="menu-settings">
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-700/50" />
+                <DropdownMenuItem className="flex items-center gap-2 text-red-400 focus:text-red-400" data-testid="menu-logout">
+                  <LogOut className="h-4 w-4" />
+                  Log Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             {/* Mobile Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -147,6 +170,20 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
                       </Link>
                     );
                   })}
+                  
+                  <Separator className="bg-gray-700/50" />
+                  
+                  <Link href="/settings">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-3 text-plasma-blue hover:bg-plasma-blue/10"
+                      onClick={() => setIsOpen(false)}
+                      data-testid="mobile-nav-settings"
+                    >
+                      <Settings className="h-5 w-5" />
+                      Settings
+                    </Button>
+                  </Link>
                 </div>
               </SheetContent>
             </Sheet>

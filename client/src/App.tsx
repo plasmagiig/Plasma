@@ -11,6 +11,7 @@ import Create from "@/pages/create";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import ProfileSettings from "@/pages/profile-settings";
+import Settings from "@/pages/settings";
 import Trending from "@/pages/trending";
 import MonetizationHub from "@/pages/monetization-hub";
 import NotFound from "@/pages/not-found";
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/monetization" component={MonetizationHub} />
       <Route path="/profile/:username" component={Profile} />
       <Route path="/profile/settings" component={ProfileSettings} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );
