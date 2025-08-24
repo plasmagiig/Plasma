@@ -8,8 +8,15 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
   displayName: text("display_name").notNull(),
+  channelName: text("channel_name"), // Channel/business name
   bio: text("bio"),
+  channelDescription: text("channel_description"), // Detailed channel description
   avatar: text("avatar"),
+  channelUrl: text("channel_url"), // Custom channel URL
+  profileMusic: text("profile_music"), // Background music for profile
+  socialLinks: text("social_links").default("[]"), // JSON array of social links
+  privacySettings: text("privacy_settings").default("{\"profileVisibility\":\"public\",\"allowMessages\":\"everyone\",\"showActivity\":true}"), // JSON privacy settings
+  communityPosts: boolean("community_posts").default(true), // Allow community posts
   energyLevel: integer("energy_level").default(0),
   totalEarnings: decimal("total_earnings", { precision: 10, scale: 2 }).default("0.00"),
   followersCount: integer("followers_count").default(0),
@@ -223,6 +230,22 @@ export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
 });
+
+// Enhanced profile update schema for comprehensive editing
+export const updateProfileSchema = insertUserSchema.pick({
+  displayName: true,
+  channelName: true,
+  username: true,
+  bio: true,
+  channelDescription: true,
+  email: true,
+  channelUrl: true,
+  profileMusic: true,
+  socialLinks: true,
+  privacySettings: true,
+  communityPosts: true,
+  theme: true,
+}).partial();
 
 export const insertContentSchema = createInsertSchema(content).omit({
   id: true,

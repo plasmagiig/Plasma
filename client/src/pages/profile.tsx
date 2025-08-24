@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, MapPin, Calendar, Link as LinkIcon, Users, Zap, TrendingUp, Settings, Edit3, Award } from "lucide-react";
+import { Loader2, MapPin, Calendar, Link as LinkIcon, Users, Zap, TrendingUp, Settings, Edit3, Award, Globe, Music, ExternalLink } from "lucide-react";
 import ContentCard from "@/components/content-card";
 import UserAvatar from "@/components/user-avatar";
 import CreatorLevelBadge from "@/components/creator-level-badge";
@@ -75,10 +75,59 @@ export default function Profile() {
                     )}
                     <CreatorLevelBadge level={user.creatorLevel || "bronze"} />
                   </div>
-                  <p className="text-plasma-blue text-lg mb-2" data-testid="text-username">@{user.username}</p>
-                  {user.bio && (
-                    <p className="text-gray-400 max-w-md" data-testid="text-bio">{user.bio}</p>
+                  {user.channelName && user.channelName !== user.displayName && (
+                    <p className="text-plasma-purple text-lg font-medium mb-1" data-testid="text-channel-name">{user.channelName}</p>
                   )}
+                  <div className="flex items-center gap-4 mb-3">
+                    <p className="text-plasma-blue text-lg" data-testid="text-username">@{user.username}</p>
+                    {user.channelUrl && (
+                      <div className="flex items-center gap-1 text-sm text-gray-400">
+                        <Globe className="h-4 w-4" />
+                        <span>plasma.app/{user.channelUrl}</span>
+                      </div>
+                    )}
+                    {user.profileMusic && (
+                      <div className="flex items-center gap-1 text-sm text-plasma-pink">
+                        <Music className="h-4 w-4" />
+                        <span>Music</span>
+                      </div>
+                    )}
+                  </div>
+                  {user.bio && (
+                    <p className="text-gray-300 max-w-md mb-2" data-testid="text-bio">{user.bio}</p>
+                  )}
+                  {user.channelDescription && user.channelDescription !== user.bio && (
+                    <p className="text-gray-400 max-w-md text-sm" data-testid="text-channel-description">{user.channelDescription}</p>
+                  )}
+                  
+                  {/* Social Links */}
+                  {(() => {
+                    try {
+                      const socialLinks = JSON.parse(user.socialLinks || "[]");
+                      if (socialLinks.length > 0) {
+                        return (
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {socialLinks.map((link: any, index: number) => (
+                              <a
+                                key={index}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 px-3 py-1 bg-plasma-surface/50 rounded-full text-sm text-plasma-blue hover:bg-plasma-surface transition-colors"
+                                data-testid={`social-link-${index}`}
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                {link.platform}
+                              </a>
+                            ))}
+                          </div>
+                        );
+                      }
+                    } catch {
+                      return null;
+                    }
+                    return null;
+                  })()}
                 </div>
               </div>
 
