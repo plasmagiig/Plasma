@@ -147,6 +147,77 @@ export const challenges = pgTable("challenges", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const creatorTokens = pgTable("creator_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  creatorId: varchar("creator_id").references(() => users.id).notNull(),
+  tokenSymbol: text("token_symbol").notNull().unique(),
+  totalSupply: integer("total_supply").default(10000),
+  currentPrice: decimal("current_price", { precision: 10, scale: 6 }).default("1.00"),
+  marketCap: decimal("market_cap", { precision: 15, scale: 2 }).default("0.00"),
+  dividendPool: decimal("dividend_pool", { precision: 10, scale: 2 }).default("0.00"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const tokenHoldings = pgTable("token_holdings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  creatorTokenId: varchar("creator_token_id").references(() => creatorTokens.id).notNull(),
+  shares: integer("shares").notNull(),
+  purchasePrice: decimal("purchase_price", { precision: 10, scale: 6 }).notNull(),
+  purchaseDate: timestamp("purchase_date").defaultNow(),
+});
+
+export const collaborativeContent = pgTable("collaborative_content", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  contentId: varchar("content_id").references(() => content.id).notNull(),
+  collaborators: text("collaborators").array().notNull(), // JSON array of user IDs with contribution %
+  profitSplits: text("profit_splits").notNull(), // JSON object with userId: percentage
+  totalEarnings: decimal("total_earnings", { precision: 10, scale: 2 }).default("0.00"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const skillMarketplace = pgTable("skill_marketplace", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  creatorId: varchar("creator_id").references(() => users.id).notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  duration: integer("duration").notNull(), // in minutes
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  difficulty: text("difficulty").notNull(), // beginner, intermediate, advanced
+  videoUrl: text("video_url"),
+  thumbnailUrl: text("thumbnail_url"),
+  enrollmentCount: integer("enrollment_count").default(0),
+  rating: decimal("rating", { precision: 3, scale: 2 }).default("0.00"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const skillEnrollments = pgTable("skill_enrollments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  skillId: varchar("skill_id").references(() => skillMarketplace.id).notNull(),
+  completed: boolean("completed").default(false),
+  rating: integer("rating"), // 1-5 stars
+  review: text("review"),
+  enrolledAt: timestamp("enrolled_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+export const brandPartnerships = pgTable("brand_partnerships", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  creatorId: varchar("creator_id").references(() => users.id).notNull(),
+  brandName: text("brand_name").notNull(),
+  campaignTitle: text("campaign_title").notNull(),
+  description: text("description").notNull(),
+  budget: decimal("budget", { precision: 10, scale: 2 }).notNull(),
+  requirements: text("requirements").notNull(), // JSON string
+  status: text("status").default("pending"), // pending, accepted, rejected, completed
+  matchScore: integer("match_score"), // AI-generated 1-100 compatibility score
+  deadline: timestamp("deadline"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -218,6 +289,39 @@ export const insertChallengeSchema = createInsertSchema(challenges).omit({
   createdAt: true,
 });
 
+export const insertCreatorTokenSchema = createInsertSchema(creatorTokens).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTokenHoldingSchema = createInsertSchema(tokenHoldings).omit({
+  id: true,
+  purchaseDate: true,
+});
+
+export const insertCollaborativeContentSchema = createInsertSchema(collaborativeContent).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSkillMarketplaceSchema = createInsertSchema(skillMarketplace).omit({
+  id: true,
+  createdAt: true,
+  enrollmentCount: true,
+  rating: true,
+});
+
+export const insertSkillEnrollmentSchema = createInsertSchema(skillEnrollments).omit({
+  id: true,
+  enrolledAt: true,
+  completedAt: true,
+});
+
+export const insertBrandPartnershipSchema = createInsertSchema(brandPartnerships).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -245,3 +349,15 @@ export type StoryView = typeof storyViews.$inferSelect;
 export type InsertStoryView = z.infer<typeof insertStoryViewSchema>;
 export type Challenge = typeof challenges.$inferSelect;
 export type InsertChallenge = z.infer<typeof insertChallengeSchema>;
+export type CreatorToken = typeof creatorTokens.$inferSelect;
+export type InsertCreatorToken = z.infer<typeof insertCreatorTokenSchema>;
+export type TokenHolding = typeof tokenHoldings.$inferSelect;
+export type InsertTokenHolding = z.infer<typeof insertTokenHoldingSchema>;
+export type CollaborativeContent = typeof collaborativeContent.$inferSelect;
+export type InsertCollaborativeContent = z.infer<typeof insertCollaborativeContentSchema>;
+export type SkillMarketplace = typeof skillMarketplace.$inferSelect;
+export type InsertSkillMarketplace = z.infer<typeof insertSkillMarketplaceSchema>;
+export type SkillEnrollment = typeof skillEnrollments.$inferSelect;
+export type InsertSkillEnrollment = z.infer<typeof insertSkillEnrollmentSchema>;
+export type BrandPartnership = typeof brandPartnerships.$inferSelect;
+export type InsertBrandPartnership = z.infer<typeof insertBrandPartnershipSchema>;

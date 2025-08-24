@@ -8,6 +8,7 @@ import ContentCard from "@/components/content-card";
 import UserAvatar from "@/components/user-avatar";
 import CreatorLevelBadge from "@/components/creator-level-badge";
 import AchievementBadge from "@/components/achievement-badge";
+import CreatorTokenWidget from "@/components/creator-token-widget";
 
 export default function Profile() {
   const { username } = useParams();
@@ -180,6 +181,21 @@ export default function Profile() {
                 </Button>
               </div>
             </div>
+
+            {/* Creator Investment Widget */}
+            {username === "alexchen" && (
+              <div className="mt-6">
+                <h3 className="text-sm font-medium text-gray-400 mb-3">Invest in this Creator</h3>
+                <CreatorTokenWidget 
+                  creatorId={user.id} 
+                  creator={{
+                    username: user.username,
+                    displayName: user.displayName,
+                    avatar: user.avatar
+                  }} 
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
 

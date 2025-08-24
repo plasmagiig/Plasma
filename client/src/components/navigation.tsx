@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { Menu, Home, Plus, BarChart3, User, Users, TrendingUp, Bell } from "lucide-react";
+import { Menu, Home, Plus, BarChart3, User, Users, TrendingUp, Bell, DollarSign } from "lucide-react";
 import UserAvatar from "@/components/user-avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import SmartNotifications from "@/components/smart-notifications";
@@ -21,7 +21,8 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
     { path: "/", label: "Stream", icon: Home, color: "plasma-blue" },
     { path: "/trending", label: "Trending", icon: TrendingUp, color: "plasma-pink" },
     { path: "/create", label: "Create", icon: Plus, color: "plasma-purple" },
-    { path: "/dashboard", label: "Earn", icon: BarChart3, color: "plasma-blue" },
+    { path: "/monetization", label: "Monetize", icon: DollarSign, color: "plasma-blue" },
+    { path: "/dashboard", label: "Analytics", icon: BarChart3, color: "plasma-purple" },
   ];
 
   const NavContent = () => (

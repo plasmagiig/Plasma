@@ -12,6 +12,7 @@ import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import ProfileSettings from "@/pages/profile-settings";
 import Trending from "@/pages/trending";
+import MonetizationHub from "@/pages/monetization-hub";
 import NotFound from "@/pages/not-found";
 import { useState } from "react";
 
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/create" component={Create} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/trending" component={Trending} />
+      <Route path="/monetization" component={MonetizationHub} />
       <Route path="/profile/:username" component={Profile} />
       <Route path="/profile/settings" component={ProfileSettings} />
       <Route component={NotFound} />
