@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContentSchema, insertInteractionSchema, insertUserSchema } from "@shared/schema";
+import { insertContentSchema, insertInteractionSchema, insertUserSchema, insertCommentSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -175,6 +175,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(summary);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch earnings summary" });
+    }
+  });
+
+  // Comments
+  app.get("/api/content/:contentId/comments", async (req, res) => {
+    try {
+      const comments = await storage.getCommentsByContent(req.params.contentId);
+      const users = await storage.getAllUsers();
+      
+      // Enhance comments with user data
+      const commentsWithUsers = comments.map(comment => {
+        const user = users.find(u => u.id === comment.userId);
+        return {
+          ...comment,
+          user: user ? {
+            id: user.id,
+            username: user.username,
+            displayName: user.displayName,
+            avatar: user.avatar,
+          } : null,
+        };
+      });
+
+      res.json(commentsWithUsers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch comments" });
+    }
+  });
+
+  app.post("/api/comments", async (req, res) => {
+    try {
+      const commentData = insertCommentSchema.parse(req.body);
+      const comment = await storage.createComment(commentData);
+      res.status(201).json(comment);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid comment data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create comment" });
+    }
+  });
+
+  app.delete("/api/comments/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteComment(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Comment not found" });
+      }
+      res.json({ message: "Comment deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete comment" });
     }
   });
 

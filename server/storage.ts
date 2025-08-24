@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Content, type InsertContent, type Interaction, type InsertInteraction, type Subscription, type InsertSubscription, type Earning, type InsertEarning } from "@shared/schema";
+import { type User, type InsertUser, type Content, type InsertContent, type Interaction, type InsertInteraction, type Subscription, type InsertSubscription, type Earning, type InsertEarning, type Comment, type InsertComment } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -34,6 +34,11 @@ export interface IStorage {
   getEarningsByUser(userId: string): Promise<Earning[]>;
   createEarning(earning: InsertEarning): Promise<Earning>;
   getUserEarningsSummary(userId: string): Promise<{ total: number; today: number; thisWeek: number; thisMonth: number }>;
+
+  // Comments
+  getCommentsByContent(contentId: string): Promise<Comment[]>;
+  createComment(comment: InsertComment): Promise<Comment>;
+  deleteComment(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -42,6 +47,7 @@ export class MemStorage implements IStorage {
   private interactions: Map<string, Interaction> = new Map();
   private subscriptions: Map<string, Subscription> = new Map();
   private earnings: Map<string, Earning> = new Map();
+  private comments: Map<string, Comment> = new Map();
 
   constructor() {
     // Initialize with demo data
@@ -140,6 +146,9 @@ export class MemStorage implements IStorage {
         type: "post",
         title: "The Creator Economy Revolution",
         description: "Just hit my first $10k month on Plasma! 🚀 Here's what I learned about building a sustainable creator business in the new economy...",
+        fileUrl: null,
+        thumbnailUrl: null,
+        duration: null,
         energyBoosts: 567,
         resonance: 123,
         amplify: 45,
@@ -172,6 +181,52 @@ export class MemStorage implements IStorage {
     ];
 
     demoContent.forEach(content => this.content.set(content.id, content));
+
+    // Create demo comments
+    const demoComments = [
+      {
+        id: "comment-1",
+        userId: "user-2",
+        contentId: "content-1",
+        parentId: null,
+        content: "This is exactly what the creator economy needed! 🚀 The energy-based interactions are so much more meaningful than traditional likes.",
+        createdAt: new Date(),
+      },
+      {
+        id: "comment-2",
+        userId: "user-3",
+        contentId: "content-1",
+        parentId: null,
+        content: "Finally, a platform where creators get fairly compensated. The transparent earnings model is revolutionary!",
+        createdAt: new Date(),
+      },
+      {
+        id: "comment-3",
+        userId: "user-1",
+        contentId: "content-1",
+        parentId: "comment-1",
+        content: "Thanks! The vision is to make every interaction valuable for creators ⚡",
+        createdAt: new Date(),
+      },
+      {
+        id: "comment-4",
+        userId: "user-1",
+        contentId: "content-2",
+        parentId: null,
+        content: "Your art skills are incredible! The way you capture so much emotion in 60 seconds is amazing 🎨",
+        createdAt: new Date(),
+      },
+      {
+        id: "comment-5",
+        userId: "user-3",
+        contentId: "content-4",
+        parentId: null,
+        content: "This live stream is pure energy! Love watching the creative process in real-time ✨",
+        createdAt: new Date(),
+      },
+    ];
+
+    demoComments.forEach(comment => this.comments.set(comment.id, comment));
   }
 
   // Users
@@ -245,6 +300,7 @@ export class MemStorage implements IStorage {
       resonance: 0,
       amplify: 0,
       earnings: "0.00",
+      isPublished: insertContent.isPublished !== false,
       isLive: insertContent.type === "livestream",
       viewersCount: insertContent.type === "livestream" ? 1 : 0,
       streamKey: insertContent.type === "livestream" ? `plasma-live-${Math.random().toString(36).substr(2, 9)}` : null,
@@ -374,6 +430,29 @@ export class MemStorage implements IStorage {
       thisWeek: weekEarnings,
       thisMonth: monthEarnings,
     };
+  }
+
+  // Comments
+  async getCommentsByContent(contentId: string): Promise<Comment[]> {
+    return Array.from(this.comments.values())
+      .filter(comment => comment.contentId === contentId)
+      .sort((a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0));
+  }
+
+  async createComment(insertComment: InsertComment): Promise<Comment> {
+    const id = randomUUID();
+    const comment: Comment = {
+      ...insertComment,
+      id,
+      parentId: insertComment.parentId || null,
+      createdAt: new Date(),
+    };
+    this.comments.set(id, comment);
+    return comment;
+  }
+
+  async deleteComment(id: string): Promise<boolean> {
+    return this.comments.delete(id);
   }
 }
 

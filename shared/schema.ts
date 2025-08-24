@@ -65,6 +65,15 @@ export const earnings = pgTable("earnings", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const comments = pgTable("comments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  contentId: varchar("content_id").references(() => content.id).notNull(),
+  parentId: varchar("parent_id"), // For nested replies
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -95,6 +104,11 @@ export const insertEarningSchema = createInsertSchema(earnings).omit({
   createdAt: true,
 });
 
+export const insertCommentSchema = createInsertSchema(comments).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -106,3 +120,5 @@ export type Subscription = typeof subscriptions.$inferSelect;
 export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
 export type Earning = typeof earnings.$inferSelect;
 export type InsertEarning = z.infer<typeof insertEarningSchema>;
+export type Comment = typeof comments.$inferSelect;
+export type InsertComment = z.infer<typeof insertCommentSchema>;

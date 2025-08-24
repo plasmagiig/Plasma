@@ -3,12 +3,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Zap, Radio, Share2, Play, Clock } from "lucide-react";
+import { Zap, Radio, Share2, Play, Clock, MessageCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import VideoPlayer from "./video-player";
 import GiigPlayer from "./giig-player";
 import LiveStreamPlayer from "./live-stream-player";
+import CommentSection from "./comment-section";
 
 interface ContentCardProps {
   content: {
@@ -37,6 +38,7 @@ interface ContentCardProps {
 
 export default function ContentCard({ content }: ContentCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   const [userInteractions, setUserInteractions] = useState<Record<string, boolean>>({});
   const queryClient = useQueryClient();
 
@@ -306,9 +308,25 @@ export default function ContentCard({ content }: ContentCardProps) {
                 <Share2 className="h-4 w-4" />
                 <span className="text-sm" data-testid="text-amplify-count">{content.amplify}</span>
               </Button>
+
+              {/* Comments Button */}
+              <CommentSection 
+                contentId={content.id}
+                isOpen={showComments}
+                onToggle={() => setShowComments(!showComments)}
+              />
             </div>
             <div className="text-sm font-mono text-gray-400" data-testid="text-earnings">${content.earnings}</div>
           </div>
+
+          {/* Comments Section */}
+          {showComments && (
+            <CommentSection 
+              contentId={content.id}
+              isOpen={showComments}
+              onToggle={() => setShowComments(!showComments)}
+            />
+          )}
         </div>
       </CardContent>
     </Card>
