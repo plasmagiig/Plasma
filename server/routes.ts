@@ -232,11 +232,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mock file upload endpoint (for demo purposes)
   app.post("/api/upload", async (req, res) => {
     try {
+      const { filename } = req.body;
+      
+      if (!filename || typeof filename !== 'string') {
+        return res.status(400).json({ message: "Filename is required" });
+      }
+      
+      // Validate file extension
+      const allowedExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm'];
+      const fileExtension = filename.toLowerCase().substring(filename.lastIndexOf('.'));
+      
+      if (!allowedExtensions.includes(fileExtension)) {
+        return res.status(400).json({ 
+          message: "Invalid file type. Only video files are allowed." 
+        });
+      }
+      
+      // Simulate upload delay
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // In a real implementation, this would handle file uploads
-      // For now, return a mock URL
-      const mockUrl = `/api/files/${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      res.json({ url: mockUrl });
+      // For now, return a mock URL with proper filename
+      const timestamp = Date.now();
+      const randomId = Math.random().toString(36).substr(2, 9);
+      const mockUrl = `/api/files/${timestamp}-${randomId}${fileExtension}`;
+      
+      res.json({ 
+        url: mockUrl,
+        filename: filename,
+        uploadedAt: new Date().toISOString()
+      });
     } catch (error) {
+      console.error("Upload error:", error);
       res.status(500).json({ message: "Failed to upload file" });
     }
   });
