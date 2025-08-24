@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Menu, Home, Plus, BarChart3, User, Users, TrendingUp, Bell, DollarSign, Settings, LogOut, Grid3X3, Wrench } from "lucide-react";
+import { Menu, Home, Plus, BarChart3, User, Users, TrendingUp, Bell, DollarSign, Settings, LogOut, Grid3X3, Wrench, Search } from "lucide-react";
 import UserAvatar from "@/components/user-avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import SmartNotifications from "@/components/smart-notifications";
@@ -63,8 +63,15 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
                 </Badge>
               </Button>
 
-              {/* Theme Toggle */}
-              <ThemeToggle />
+              {/* Search Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="relative"
+                data-testid="button-search"
+              >
+                <Search className="h-5 w-5" />
+              </Button>
 
               {/* Profile Menu */}
               <DropdownMenu>
