@@ -22,8 +22,8 @@ export default function Giig() {
             <Card key={giig.id} className="glass-morphism overflow-hidden">
               <CardContent className="p-0">
                 <GiigPlayer
-                  content={giig}
-                  autoPlay={false}
+                  src={giig.fileUrl || "/placeholder-video.mp4"}
+                  onClose={() => {}}
                   data-testid={`giig-${giig.id}`}
                 />
               </CardContent>

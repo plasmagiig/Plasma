@@ -1,13 +1,32 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ContentCard from "@/components/content-card";
 import EnergyBar from "@/components/energy-bar";
 import DailyChallengeBanner from "@/components/daily-challenge-banner";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Search, Filter, TrendingUp, Clock, Zap, Loader2 } from "lucide-react";
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("trending");
+  const [filterType, setFilterType] = useState("all");
+  
   const { data: content, isLoading, error } = useQuery({
     queryKey: ["/api/content"],
+  });
+
+  // Filter and sort content based on user selections
+  const filteredContent = content?.filter((item: any) => {
+    const matchesSearch = searchQuery === "" || 
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesType = filterType === "all" || item.type === filterType;
+    
+    return matchesSearch && matchesType;
   });
 
   if (error) {
@@ -80,6 +99,83 @@ export default function Home() {
           {/* Energy Flow Indicator */}
           <EnergyBar />
           
+          {/* Search and Filter Tools */}
+          <div className="glass-morphism rounded-2xl p-6 mb-12 max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+              {/* Search Bar */}
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Input
+                  placeholder="Search creators, content, or hashtags..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-plasma-surface/50 border-plasma-blue/30 focus:border-plasma-blue text-white placeholder-gray-400"
+                  data-testid="input-search-content"
+                />
+              </div>
+              
+              {/* Filter by Type */}
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-40 bg-plasma-surface/50 border-plasma-blue/30" data-testid="select-content-type">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Content</SelectItem>
+                  <SelectItem value="video">Videos</SelectItem>
+                  <SelectItem value="giig">Giigs</SelectItem>
+                  <SelectItem value="post">Posts</SelectItem>
+                  <SelectItem value="livestream">Live Streams</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              {/* Sort Options */}
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-40 bg-plasma-surface/50 border-plasma-blue/30" data-testid="select-sort-by">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="trending">Trending</SelectItem>
+                  <SelectItem value="recent">Recent</SelectItem>
+                  <SelectItem value="energy">Most Energy</SelectItem>
+                  <SelectItem value="earnings">Top Earning</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Quick Filter Tags */}
+            <div className="flex flex-wrap gap-2 mt-4">
+              <Badge 
+                variant="outline" 
+                className="cursor-pointer hover:bg-plasma-blue/20 border-plasma-blue/50 text-plasma-blue"
+                onClick={() => setFilterType("video")}
+                data-testid="filter-videos"
+              >
+                <Zap className="h-3 w-3 mr-1" />
+                Videos
+              </Badge>
+              <Badge 
+                variant="outline" 
+                className="cursor-pointer hover:bg-plasma-purple/20 border-plasma-purple/50 text-plasma-purple"
+                onClick={() => setFilterType("giig")}
+                data-testid="filter-giigs"
+              >
+                <Clock className="h-3 w-3 mr-1" />
+                Giigs
+              </Badge>
+              <Badge 
+                variant="outline" 
+                className="cursor-pointer hover:bg-plasma-pink/20 border-plasma-pink/50 text-plasma-pink"
+                onClick={() => setSortBy("trending")}
+                data-testid="filter-trending"
+              >
+                <TrendingUp className="h-3 w-3 mr-1" />
+                Trending Now
+              </Badge>
+            </div>
+          </div>
+          
           {/* Content Grid */}
           {isLoading ? (
             <div className="flex justify-center items-center py-20">
@@ -87,11 +183,32 @@ export default function Home() {
               <span className="ml-2 text-gray-400">Loading plasma stream...</span>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-12">
-              {content?.map((item: any) => (
-                <ContentCard key={item.id} content={item} />
-              ))}
-            </div>
+            <>
+              {/* Results Info */}
+              {searchQuery && (
+                <div className="text-center mb-6">
+                  <p className="text-gray-400">
+                    Found {filteredContent?.length || 0} results for "<span className="text-plasma-blue">{searchQuery}</span>"
+                  </p>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-12">
+                {filteredContent?.length > 0 ? (
+                  filteredContent.map((item: any) => (
+                    <ContentCard key={item.id} content={item} />
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-12">
+                    <div className="w-20 h-20 bg-plasma-surface rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Search className="h-8 w-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-400 mb-2">No content found</h3>
+                    <p className="text-gray-500">Try adjusting your search or filters</p>
+                  </div>
+                )}
+              </div>
+            </>
           )}
           
           {/* Load More */}
