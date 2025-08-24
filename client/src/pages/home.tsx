@@ -21,13 +21,13 @@ export default function Home() {
   // Filter and sort content based on user selections
   const filteredContent = content?.filter((item: any) => {
     const matchesSearch = searchQuery === "" || 
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesType = filterType === "all" || item.type === filterType;
     
     return matchesSearch && matchesType;
-  });
+  }) || [];
 
   if (error) {
     return (
@@ -41,7 +41,7 @@ export default function Home() {
   }
 
   return (
-    <main className="pt-24 min-h-screen bg-gradient-to-br from-plasma-dark via-plasma-surface to-plasma-dark">
+    <main className="pt-20 min-h-screen bg-gradient-to-br from-plasma-dark via-plasma-surface to-plasma-dark pb-20">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background */}
