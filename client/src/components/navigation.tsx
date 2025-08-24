@@ -58,9 +58,6 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
                 data-testid="button-notifications"
               >
                 <Bell className="h-5 w-5 text-yellow-500" />
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 bg-plasma-pink text-white text-xs">
-                  3
-                </Badge>
               </Button>
 
               {/* Search Button */}
@@ -77,7 +74,7 @@ export default function Navigation({ onCollaborationToggle }: NavigationProps) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="relative" data-testid="button-profile-menu">
-                    <UserAvatar user={{ name: "User", avatar: null }} size="sm" />
+                    <UserAvatar user={{ username: "User", avatar: null }} size="sm" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
